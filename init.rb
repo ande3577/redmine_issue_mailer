@@ -2,6 +2,8 @@ require_dependency 'issue_mailer_hooks'
 
 Redmine::Plugin.register :redmine_issue_mailer do
   
+  settings :default => {'allowed_domains' => nil}, :partial => 'settings/issue_mailer_settings'
+  
   project_module :issue_mailer do
     permission :email_an_issue_to_a_non_user, :issue_emails => [ :create, :new ]
   end

@@ -106,6 +106,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert flash[:error]
     assert_template :new
     assert_equal 's@b.com, ab.com', assigns('address')
+<<<<<<< HEAD
   end
   
   def test_send_to_multiple_allowed_domains
@@ -136,6 +137,8 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert flash[:error]
     assert_template :new
     assert_equal 's@b.com, a@d.com', assigns('address')
+=======
+>>>>>>> master
   end
   
   private

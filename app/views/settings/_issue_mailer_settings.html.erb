@@ -1,0 +1,11 @@
+<table>
+  <tbody>
+    <tr>
+      <th><%= l(:issue_mailer_allowed_domains) %></th>
+      <td><input type="text" id="settings_allowed_domains" 
+                     value="<%= settings['allowed_domains'] %>" 
+             name="settings[allowed_domains]" >
+          <em class="info"><%= l(:text_comma_separated) %></em>
+    </tr>
+  </tbody>
+</table>

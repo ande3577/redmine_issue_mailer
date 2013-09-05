@@ -7,3 +7,6 @@ en:
   issue_mailer_button_send: "Send"
   issue_mailer_label_field_address: "E-mail Address"
   issue_mailer_email_title: "Email %{issue}"
+  issue_mailer_allowed_domains: "Allowed Domains"
+  issue_mailer_domain_not_allowed: "Domain '%{domain}' is not allowed!"
+  issue_mailer_message_sent: "Message sent."

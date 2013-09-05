@@ -15,13 +15,20 @@ class IssueEmailsController < ApplicationController
   def create
     users = []
     return handle_address_error(l(:issue_mailer_blank_address_error)) if @addresses.nil? or @addresses.empty?
+      
+    domains = split_addresses(Setting.plugin_redmine_issue_mailer['allowed_domains'])
+    
     @addresses.each do |a|
       return handle_address_error(l(:issue_mailer_blank_address_error)) if a.nil? or a.blank?
       return handle_address_error(l(:issue_mailer_invalid_address_error)) if (a =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i).nil?
+      
+      d = a.split('@')[1]
+      return handle_address_error(l(:issue_mailer_domain_not_allowed, :domain => d)) if domains and !domains.index(d)
   
       users << User.new(:mail => a)
     end
     Mailer.issue_add(@issue, users, [] ).deliver
+    flash[:notice] = l(:issue_mailer_message_sent)
     redirect_to :controller => :issues, :action => :show,:id => @issue.id
   end
   
@@ -41,8 +48,7 @@ class IssueEmailsController < ApplicationController
   def get_address_from_params
     @address = params[:address]
       
-    @addresses = @address.split(",") if @address
-    @addresses.map { |a| a.strip! } if @addresses
+    @addresses = split_addresses(@address)
   end
   
   def handle_address_error(error)
@@ -50,6 +56,12 @@ class IssueEmailsController < ApplicationController
     new
     render :action => :new
     false 
+  end
+  
+  def split_addresses(str)
+    addresses = str.split(",") if str
+    addresses.map { |a| a.strip! } if addresses
+    addresses
   end
   
 end
