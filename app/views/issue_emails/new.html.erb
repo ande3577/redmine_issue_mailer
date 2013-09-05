@@ -1,7 +1,10 @@
 <h2><%= link_to_issue(@issue) %> &#187; <%= l(:issue_mailer_label) %></h2>
 
 <%= form_tag(:action => :create) do %>
-  <%= label_tag(:address, l(:issue_mailer_label_field_address)) %>
-  <%= text_field_tag(:address, @address) %><br>
-  <%= submit_tag l(:issue_mailer_button_send) %>
+  <div class="tabular">
+    <p><%= label_tag(:address, l(:issue_mailer_label_field_address)) %>
+    <%= text_field_tag(:address, @address) %>
+    <em class="info"><%= l(:text_comma_separated) %></em></p>
+  </div>
+    <%= submit_tag l(:issue_mailer_button_send) %>
 <% end %>

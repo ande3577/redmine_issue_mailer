@@ -9,6 +9,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
     @user = User.find(2)
     @issue.project.enabled_module_names = [:issue_tracking, :issue_mailer]
     flash[:error] = nil # make sure nothing left over from past tests
+    ActionMailer::Base.deliveries.clear
   end
   
   # Replace this with your real tests.
@@ -61,6 +62,9 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert_nil flash[:error]
     assert_equal @issue, assigns('issue')
     assert_equal @issue.project, assigns('project')
+    
+    assert_equal 's@b.com', assigns('address')
+    assert_equal ['s@b.com'], assigns('addresses')
 
     #validate that email was sent
     assert !ActionMailer::Base.deliveries.empty?
@@ -73,6 +77,34 @@ class IssueEmailsControllerTest < ActionController::TestCase
     end
     
     assert_mail_body_match @issue.subject, email
+  end
+  
+  def test_send_to_multiple_addresses
+    get_user()
+    add_permission()
+    post :create, :id => @issue.id, :address => 's@b.com, a@b.com'
+    
+    assert_equal 's@b.com, a@b.com', assigns('address')
+    assert_equal ['s@b.com', 'a@b.com'], assigns('addresses')
+    
+    assert !ActionMailer::Base.deliveries.empty?
+    email = ActionMailer::Base.deliveries.last
+    
+    if Setting.bcc_recipients?
+      assert_equal ['s@b.com', 'a@b.com'], email.bcc
+    else
+      assert_equal ['s@b.com', 'a@b.com'], email.to  
+    end
+  end
+  
+  def test_send_with_second_address_invalid
+    get_user()
+    add_permission()
+    post :create, :id => @issue.id, :address => 'sb.com, ab.com'
+    assert_response 200
+    assert flash[:error]
+    assert_template :new
+    assert 'sb.com', assigns('address')
   end
   
   private

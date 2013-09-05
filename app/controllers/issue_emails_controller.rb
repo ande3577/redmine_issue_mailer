@@ -13,11 +13,15 @@ class IssueEmailsController < ApplicationController
   end
 
   def create
-    return handle_address_error(l(:issue_mailer_blank_address_error)) if @address.nil? or @address.blank?
-    return handle_address_error(l(:issue_mailer_invalid_address_error)) if (@address =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i).nil?
-
-    users = [User.new(:mail => @address)]
-    Mailer.issue_add(@issue, [User.new(:mail => @address)], [] ).deliver
+    users = []
+    return handle_address_error(l(:issue_mailer_blank_address_error)) if @addresses.nil? or @addresses.empty?
+    @addresses.each do |a|
+      return handle_address_error(l(:issue_mailer_blank_address_error)) if a.nil? or a.blank?
+      return handle_address_error(l(:issue_mailer_invalid_address_error)) if (a =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i).nil?
+  
+      users << User.new(:mail => a)
+    end
+    Mailer.issue_add(@issue, users, [] ).deliver
     redirect_to :controller => :issues, :action => :show,:id => @issue.id
   end
   
@@ -36,6 +40,9 @@ class IssueEmailsController < ApplicationController
   
   def get_address_from_params
     @address = params[:address]
+      
+    @addresses = @address.split(",") if @address
+    @addresses.map { |a| a.strip! } if @addresses
   end
   
   def handle_address_error(error)
