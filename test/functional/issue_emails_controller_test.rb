@@ -100,11 +100,11 @@ class IssueEmailsControllerTest < ActionController::TestCase
   def test_send_with_second_address_invalid
     get_user()
     add_permission()
-    post :create, :id => @issue.id, :address => 'sb.com, ab.com'
+    post :create, :id => @issue.id, :address => 's@b.com, ab.com'
     assert_response 200
     assert flash[:error]
     assert_template :new
-    assert 'sb.com', assigns('address')
+    assert_equal 's@b.com, ab.com', assigns('address')
   end
   
   private
