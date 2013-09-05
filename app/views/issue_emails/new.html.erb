@@ -1,3 +1,4 @@
+<% html_title l(:issue_mailer_email_title, :issue => "#{@issue.tracker.name} ##{@issue.id}") %>
 <h2><%= link_to_issue(@issue) %> &#187; <%= l(:issue_mailer_label) %></h2>
 
 <%= form_tag(:action => :create) do %>

@@ -6,3 +6,4 @@ en:
   issue_mailer_link: "E-mail this issue"
   issue_mailer_button_send: "Send"
   issue_mailer_label_field_address: "E-mail Address"
+  issue_mailer_email_title: "Email %{issue}"
