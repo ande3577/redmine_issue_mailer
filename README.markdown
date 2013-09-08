@@ -10,7 +10,6 @@ issue" permission.
 ## Installation
 
 1.  Clone to plugins/redmine_issue_mailer
-1.  Migrate the database
 1.  Restart the server
 
 ## License
