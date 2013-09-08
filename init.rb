@@ -1,4 +1,5 @@
 require_dependency 'issue_mailer_hooks'
+require_dependency 'redmine_issue_mailer_mailer_patch'
 
 Redmine::Plugin.register :redmine_issue_mailer do
   
