@@ -7,7 +7,7 @@ class IssueEmailsController < ApplicationController
   before_filter :get_project
   before_filter :authorize
   before_filter :get_address_from_params
-  before_filter :get_include_history_from_params
+  before_filter :get_journals
 
 
   def new
@@ -28,7 +28,7 @@ class IssueEmailsController < ApplicationController
   
       users << User.new(:mail => a)
     end
-    Mailer.issue_share(@issue, users, [], @include_history ).deliver
+    Mailer.issue_share(@issue, users, [], @journals ).deliver
     flash[:notice] = l(:issue_mailer_message_sent)
     redirect_to :controller => :issues, :action => :show,:id => @issue.id
   end
@@ -52,8 +52,17 @@ class IssueEmailsController < ApplicationController
     @addresses = split_addresses(@address)
   end
   
-  def get_include_history_from_params
+  def get_journals
     @include_history = params[:include_history]
+    if any_history?(@include_history)
+      @journals = @issue.journals
+      @journals.reject!(&:private_notes?) 
+      if @include_history == 'comments_only'
+        @journals.select! { |j| j.notes and !j.notes.empty? }
+      end
+    else
+      @journals = []
+    end
   end
   
   def handle_address_error(error)
@@ -67,6 +76,10 @@ class IssueEmailsController < ApplicationController
     addresses = str.split(",") if str
     addresses.map { |a| a.strip! } if addresses
     addresses
+  end
+  
+  def any_history?(include_history)
+    @include_history == 'all_history' or @include_history == 'comments_only'
   end
   
 end

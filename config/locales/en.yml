@@ -14,3 +14,6 @@ en:
   text_issue_shared_reason: "You are receiving this issue because it has been sent to you by another user."
   issue_mailer_label_field_include_history: "Include issue history"
   issue_mailer_label_updated_time_by: "Updated by %{author} at %{created_on}."
+  issue_mailer_no_history: "No history"
+  issue_mailer_comments_only: "Comments only"
+  issue_mailer_all_history: "All history"

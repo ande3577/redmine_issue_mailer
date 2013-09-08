@@ -147,10 +147,45 @@ class IssueEmailsControllerTest < ActionController::TestCase
   def test_send_issue_history
     get_user()
     add_permission()
-    post :create, :id => @issue.id, :address => 's@b.com', :include_history => '1'
+    post :create, :id => @issue.id, :address => 's@b.com', :include_history => 'all_history'
     assert_redirected_to :controller => :issues, :action => :show,:id => @issue.id
     email = ActionMailer::Base.deliveries.last
     assert_include @journal.notes, mail_body(email)
+  end
+  
+  def test_send_comments_only_includes_journal_with_notes
+    get_user()
+    add_permission()
+    post :create, :id => @issue.id, :address => 's@b.com', :include_history => 'comments_only'
+    assert_redirected_to :controller => :issues, :action => :show,:id => @issue.id
+    email = ActionMailer::Base.deliveries.last
+    assert_include @journal.notes, mail_body(email)
+  end
+  
+  def test_send_comments_only_does_not_include_journal_without_notes
+    get_user()
+    add_permission()
+    @journal.notes = nil
+    @journal.save!
+    @journal.reload()
+    
+    post :create, :id => @issue.id, :address => 's@b.com', :include_history => 'comments_only'
+    assert_redirected_to :controller => :issues, :action => :show,:id => @issue.id
+    email = ActionMailer::Base.deliveries.last
+    assert_not_include 'Activity', mail_body(email)
+  end
+  
+  def test_does_not_send_private_notes
+    get_user()
+    add_permission()
+    @journal.private_notes = true
+    @journal.save!
+    @journal.reload()
+    
+    post :create, :id => @issue.id, :address => 's@b.com', :include_history => 'all_history'
+    assert_redirected_to :controller => :issues, :action => :show,:id => @issue.id
+    email = ActionMailer::Base.deliveries.last
+    assert_not_include 'Activity', mail_body(email)
   end
   
   private

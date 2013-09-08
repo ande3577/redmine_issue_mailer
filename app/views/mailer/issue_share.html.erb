@@ -1,10 +1,10 @@
 <%= l(:text_issue_shared, :id => "##{@issue.id}", :author => h(@issue.author)) %>
 <hr />
 <%= render :partial => 'issue', :formats => [:html], :locals => { :issue => @issue, :users => @users, :issue_url => @issue_url } %>
-<% if @include_history and @issue.journals.any? %>
+<% if @journals.any? %>
   <hr />
   <h3><%= l(:field_activity) %></h3>
-  <% @issue.journals.each do |journal| %>
+  <% @journals.each do |journal| %>
     <hr />
     <p><%= l(:issue_mailer_label_updated_time_by, :author => journal.user, :created_on => format_time(journal.created_on)) %></p>
     <% if journal.private_notes? %>
