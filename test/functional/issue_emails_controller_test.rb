@@ -1,13 +1,15 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class IssueEmailsControllerTest < ActionController::TestCase
-  fixtures :issues, :users, :projects, :members, :member_roles
+  fixtures :issues, :users, :projects, :members, :member_roles, :journals, 
+    :journal_details
   
   def setup
     @issue = Issue.find(2)
     @admin = User.find(1)
     @user = User.find(2)
     @issue.project.enabled_module_names = [:issue_tracking, :issue_mailer]
+    @journal = Journal.find(3)
     flash[:error] = nil # make sure nothing left over from past tests
     ActionMailer::Base.deliveries.clear
     Setting.plugin_redmine_issue_mailer['allowed_domains'] = nil
@@ -81,6 +83,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
     # @bug assert message not supported in redmine 2.3
     assert_not_include "You have received this notification because you have either subscribed to it, or are involved in it.", mail_body(email) # "make sure the default footer is removed"
     assert_include "You are receiving this issue because it has been sent to you by another user.", mail_body(email), "make sure the new footer is added"
+    assert_not_include @journal.notes, mail_body(email)
   end
   
   def test_send_to_multiple_addresses
@@ -139,6 +142,15 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert flash[:error]
     assert_template :new
     assert_equal 's@b.com, a@d.com', assigns('address')
+  end
+  
+  def test_send_issue_history
+    get_user()
+    add_permission()
+    post :create, :id => @issue.id, :address => 's@b.com', :include_history => '1'
+    assert_redirected_to :controller => :issues, :action => :show,:id => @issue.id
+    email = ActionMailer::Base.deliveries.last
+    assert_include @journal.notes, mail_body(email)
   end
   
   private

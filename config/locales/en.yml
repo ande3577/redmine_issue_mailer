@@ -12,3 +12,5 @@ en:
   issue_mailer_message_sent: "Message sent."
   text_issue_shared: "Issue %{id} has been sent to you by %{author}."
   text_issue_shared_reason: "You are receiving this issue because it has been sent to you by another user."
+  issue_mailer_label_field_include_history: "Include issue history"
+  issue_mailer_label_updated_time_by: "Updated by %{author} at %{created_on}."

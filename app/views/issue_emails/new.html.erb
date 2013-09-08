@@ -6,6 +6,8 @@
     <p><%= label_tag(:address, l(:issue_mailer_label_field_address)) %>
     <%= text_field_tag(:address, @address) %>
     <em class="info"><%= l(:text_comma_separated) %></em></p>
+    <p><%= label_tag(:include_history, l(:issue_mailer_label_field_include_history)) %>
+    <%= check_box_tag(:include_history, @include_history) %> 
   </div>
     <%= submit_tag l(:issue_mailer_button_send) %>
 <% end %>

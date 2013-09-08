@@ -7,6 +7,7 @@ class IssueEmailsController < ApplicationController
   before_filter :get_project
   before_filter :authorize
   before_filter :get_address_from_params
+  before_filter :get_include_history_from_params
 
 
   def new
@@ -27,7 +28,7 @@ class IssueEmailsController < ApplicationController
   
       users << User.new(:mail => a)
     end
-    Mailer.issue_share(@issue, users, [] ).deliver
+    Mailer.issue_share(@issue, users, [], @include_history ).deliver
     flash[:notice] = l(:issue_mailer_message_sent)
     redirect_to :controller => :issues, :action => :show,:id => @issue.id
   end
@@ -49,6 +50,10 @@ class IssueEmailsController < ApplicationController
     @address = params[:address]
       
     @addresses = split_addresses(@address)
+  end
+  
+  def get_include_history_from_params
+    @include_history = params[:include_history]
   end
   
   def handle_address_error(error)

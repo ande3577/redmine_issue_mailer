@@ -1,4 +1,18 @@
 <%= l(:text_issue_shared, :id => "##{@issue.id}", :author => @issue.author) %>
 
+<%= render :partial => 'issue', :formats => [:text], :locals => { :issue => @issue, :users => @users, :issue_url => @issue_url } %><% if @include_history and @issue.journals.any? %><%= l(:field_activity) %>
+<% @issue.journals.each do |journal| %>
+
+<%= l(:issue_mailer_label_updated_time_by, :author => journal.user, :created_on => format_time(journal.created_on)) %>
+<%= "(#{l(:field_private_notes)}) " if journal.private_notes? -%>
+
+<% details_to_strings(journal.details, true).each do |string| -%>
+<%= string %>
+<% end -%>
+
+<% if journal.notes? -%>
+<%= journal.notes %>
+
+<% end -%>
 ----------------------------------------
-<%= render :partial => 'issue', :formats => [:text], :locals => { :issue => @issue, :users => @users, :issue_url => @issue_url } %>
+<% end -%><% end -%>
