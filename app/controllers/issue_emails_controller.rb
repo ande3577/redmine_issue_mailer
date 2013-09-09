@@ -3,11 +3,8 @@ class IssueEmailsController < ApplicationController
   
   helper :issues
   
-  before_filter :get_issue
-  before_filter :get_project
-  before_filter :authorize
-  before_filter :get_address_from_params
-  before_filter :get_journals
+  before_filter :get_issue, :get_project, :authorize, :get_address_from_params,
+                :get_journals, :get_notes_from_params
 
 
   def new
@@ -28,7 +25,7 @@ class IssueEmailsController < ApplicationController
   
       users << User.new(:mail => a)
     end
-    Mailer.issue_share(@issue, users, [], @journals ).deliver
+    Mailer.issue_share(@issue, users, [], @journals, @notes ).deliver
     flash[:notice] = l(:issue_mailer_message_sent)
     redirect_to :controller => :issues, :action => :show,:id => @issue.id
   end
@@ -63,6 +60,10 @@ class IssueEmailsController < ApplicationController
     else
       @journals = []
     end
+  end
+  
+  def get_notes_from_params
+    @notes = params[:notes]
   end
   
   def handle_address_error(error)

@@ -60,7 +60,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
   def test_send_email_with_permission
     get_user()
     add_permission()
-    post :create, :id => @issue.id, :address => 's@b.com'
+    post :create, :id => @issue.id, :address => 's@b.com', :notes => 'a note added to the e-mail'
     assert_redirected_to :controller => :issues, :action => :show,:id => @issue.id
     assert_nil flash[:error]
     assert_equal @issue, assigns('issue')
@@ -84,6 +84,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert_not_include "You have received this notification because you have either subscribed to it, or are involved in it.", mail_body(email) # "make sure the default footer is removed"
     assert_include "You are receiving this issue because it has been sent to you by another user.", mail_body(email), "make sure the new footer is added"
     assert_not_include @journal.notes, mail_body(email)
+    assert_include 'a note added to the e-mail', mail_body(email)
   end
   
   def test_send_to_multiple_addresses

@@ -6,7 +6,7 @@ module RedmineIssueMailerMailerPatch
     base.send(:include, InstanceMethods)
     base.class_eval do
       # Builds a mail for notifying to_users and cc_users about a new issue
-      def issue_share(issue, to_users, cc_users, journals)
+      def issue_share(issue, to_users, cc_users, journals, notes)
         redmine_headers 'Project' => issue.project.identifier,
                         'Issue-Id' => issue.id,
                         'Issue-Author' => issue.author.login
@@ -17,6 +17,7 @@ module RedmineIssueMailerMailerPatch
         @issue = issue
         @journals = journals
         @users = to_users + cc_users
+        @notes = notes
         @issue_url = url_for(:controller => 'issues', :action => 'show', :id => issue)
         Setting.emails_footer = l(:text_issue_shared_reason) # suppress the footer message, since the user is not subscribed
         mail :to => to_users.map(&:mail),
