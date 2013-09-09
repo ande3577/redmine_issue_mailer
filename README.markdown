@@ -7,6 +7,14 @@ notification to be correctly configured on the installation.  The e-mail
 functionality is accessible from the issue sidebar for users with the "Email 
 issue" permission.
 
+### Emailing an Issue
+
+![EmailAnIssue](img/email_issue.png "E-mail an Issue")
+
+### Resulting E-mail
+
+![EmailResult](img/email_result.png "Resulting e-mail")
+
 ## Installation
 
 1.  Clone to plugins/redmine_issue_mailer
