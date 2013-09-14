@@ -17,3 +17,5 @@ en:
   issue_mailer_no_history: "No history"
   issue_mailer_comments_only: "Comments only"
   issue_mailer_all_history: "All history"
+  label_issue_mailer_add_users: "Add users"
+  permision_email_an_issue: "E-mail an issue"

@@ -1,4 +1,4 @@
-<% if @issue && @project && User.current.allowed_to?(:email_an_issue_to_a_non_user, @project) %>
+<% if @issue && @project && User.current.allowed_to?(:email_an_issue, @project) %>
 	<h3><%= l( :issue_mailer_label ) %></h3>
 	<%= link_to l(:issue_mailer_link), :controller => :issue_emails, :id => @issue.id, :action => :new %>
 <% end %>

@@ -3,9 +3,8 @@ class IssueEmailsController < ApplicationController
   
   helper :issues
   
-  before_filter :get_issue, :get_project, :authorize, :get_address_from_params,
-                :get_journals, :get_notes_from_params
-
+  before_filter :get_issue, :get_project, :authorize 
+  before_filter :get_address_from_params, :get_journals, :get_notes_from_params, :only => [:new, :create]
 
   def new
   end
@@ -17,6 +16,12 @@ class IssueEmailsController < ApplicationController
     domains = split_addresses(Setting.plugin_redmine_issue_mailer['allowed_domains'])
     
     @addresses.each do |a|
+      address_pattern = /\<[^>]+>/
+      if a =~ address_pattern
+        a = a[address_pattern]
+        a.sub!(/^\</, "")
+        a.sub!(/\>$/, "")
+      end
       return handle_address_error(l(:issue_mailer_blank_address_error)) if a.nil? or a.blank?
       return handle_address_error(l(:issue_mailer_invalid_address_error)) if (a =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i).nil?
       
@@ -28,6 +33,34 @@ class IssueEmailsController < ApplicationController
     Mailer.issue_share(@issue, users, [], @journals, @notes ).deliver
     flash[:notice] = l(:issue_mailer_message_sent)
     redirect_to :controller => :issues, :action => :show,:id => @issue.id
+  end
+  
+  def users
+    @users = User.active.all
+    @addresses = params[:addresses]
+    respond_to do |format|
+      format.js { render layout: false }
+    end
+  end
+  
+  def add_users
+    users = params[:user_ids]
+    users = [users] if users and not params[:user_ids].is_a?(Array)
+    @email_string = ""
+    unless users.nil?
+      users.each do |u|
+        begin
+          user = User.find(u)
+          @email_string << "#{user.name} <#{user.mail}>, "
+        rescue
+        end  
+      end
+    end
+    @email_string.sub!(/, $/, "")
+    @email_string = @email_string.html_safe
+    respond_to do |format|
+      format.js
+    end
   end
   
   private

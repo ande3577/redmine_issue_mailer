@@ -1,0 +1,7 @@
+<h3 class="title"><%=l(:label_issue_mailer_add_users)%></h3>
+
+<%= form_tag 'share/add_users', :remote => true do %>
+  <%= render :partial => 'issue_emails/users_form' %>
+  <%= submit_tag l(:button_add), :name => nil %>
+  <%= submit_tag l(:button_cancel), :name => nil, :onclick => "hideModal(this);", :type => 'button' %>
+<% end %>

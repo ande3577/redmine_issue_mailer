@@ -1,0 +1,10 @@
+hideModal();
+address = $('#address').val()
+address =  $.trim(address)
+
+if (!address || address.len == 0) {
+  $('#address').val("<%= @email_string %>");
+} else {
+  address = address.replace(/\,$/, "");
+  $('#address').val(address + ", " + "<%= @email_string %>");
+}

@@ -189,6 +189,48 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert_not_include 'Activity', mail_body(email)
   end
   
+  def test_parse_out_name_email_address
+    get_user()
+    add_permission()
+    
+    post :create, :id => @issue.id, :address => 'Test Developer <s@b.com>'
+    assert_redirected_to :controller => :issues, :action => :show, :id => @issue.id
+    email = ActionMailer::Base.deliveries.last
+    
+    if Setting.bcc_recipients?
+      assert_equal ['s@b.com'], email.bcc
+    else
+      assert_equal ['s@b.com'], email.to  
+    end
+  end
+  
+  def test_get_users
+    get_user()
+    add_permission()
+    
+    get :users, :id => @issue.id, :format => :js
+    assert_response 200
+    assert_equal User.active.all, assigns('users')
+  end
+  
+  def test_add_users
+    get_user()
+    add_permission()
+    
+    post :add_users, :id => @issue.id, :user_ids => [ @user.id.to_s, @admin.id.to_s ], :format => :js
+    assert_response 200
+    assert_equal "#{@user.name} <#{@user.mail}>, #{@admin.name} <#{@admin.mail}>", assigns(:email_string)
+  end
+  
+  def test_add_users_none
+    get_user()
+    add_permission()
+    
+    post :add_users, :id => @issue.id, :format => :js
+    assert_response 200
+    assert_equal "", assigns(:email_string)
+  end
+  
   private
   def get_admin()
     @request.session[:user_id] = @admin.id
@@ -199,6 +241,6 @@ class IssueEmailsControllerTest < ActionController::TestCase
   end
   
   def add_permission()
-    Role.find(1).add_permission! :email_an_issue_to_a_non_user
+    Role.find(1).add_permission! :email_an_issue
   end
 end
