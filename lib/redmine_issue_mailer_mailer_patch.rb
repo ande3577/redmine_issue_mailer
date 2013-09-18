@@ -19,7 +19,6 @@ module RedmineIssueMailerMailerPatch
         @users = to_users + cc_users
         @notes = notes
         @issue_url = url_for(:controller => 'issues', :action => 'show', :id => issue)
-        Setting.emails_footer = l(:text_issue_shared_reason) # suppress the footer message, since the user is not subscribed
         mail :to => to_users.map(&:mail),
           :cc => cc_users.map(&:mail),
           :subject => "[#{issue.project.name} - #{issue.tracker.name} ##{issue.id}] (#{issue.status.name}) #{issue.subject}"
