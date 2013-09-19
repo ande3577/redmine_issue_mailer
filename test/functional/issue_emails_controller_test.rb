@@ -188,6 +188,25 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert_not_include 'Activity', mail_body(email)
   end
   
+  def test_send_to_self
+    get_user()
+    add_permission()
+    
+    @user.pref.update_attribute :no_self_notified, true
+    
+    post :create, :id => @issue.id, :address => @user.mail
+    assert_redirected_to :controller => :issues, :action => :show,:id => @issue.id
+    
+    assert !ActionMailer::Base.deliveries.empty?
+    email = ActionMailer::Base.deliveries.last
+    
+    if Setting.bcc_recipients?
+      assert_equal [@user.mail], email.bcc
+    else
+      assert_equal [@user.mail], email.to  
+    end
+  end
+  
   def test_parse_out_name_email_address
     get_user()
     add_permission()
