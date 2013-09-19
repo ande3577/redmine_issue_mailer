@@ -36,7 +36,7 @@ class IssueEmailsController < ApplicationController
   end
   
   def users
-    @users = User.active.all
+    @users = User.active.sorted.all
     @addresses = params[:addresses]
     respond_to do |format|
       format.js { render layout: false }

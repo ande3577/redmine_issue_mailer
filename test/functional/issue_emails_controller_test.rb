@@ -228,7 +228,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
     
     get :users, :id => @issue.id, :format => :js
     assert_response 200
-    assert_equal User.active.all, assigns('users')
+    assert_equal User.active.sorted.all, assigns('users')
   end
   
   def test_add_users
