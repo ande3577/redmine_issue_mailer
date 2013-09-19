@@ -82,7 +82,6 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert_mail_body_match @issue.subject, email
     # @bug assert message not supported in redmine 2.3
     assert_not_include "You have received this notification because you have either subscribed to it, or are involved in it.", mail_body(email) # "make sure the default footer is removed"
-    assert_include "You are receiving this issue because it has been sent to you by another user.", mail_body(email), "make sure the new footer is added"
     assert_not_include @journal.notes, mail_body(email)
     assert_include 'a note added to the e-mail', mail_body(email)
   end
