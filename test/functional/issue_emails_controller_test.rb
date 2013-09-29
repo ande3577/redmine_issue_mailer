@@ -2,7 +2,7 @@ require File.expand_path('../../test_helper', __FILE__)
 
 class IssueEmailsControllerTest < ActionController::TestCase
   fixtures :issues, :users, :projects, :members, :member_roles, :journals, 
-    :journal_details
+    :journal_details, :roles
   
   def setup
     @issue = Issue.find(2)
@@ -60,9 +60,12 @@ class IssueEmailsControllerTest < ActionController::TestCase
   def test_send_email_with_permission
     get_user()
     add_permission()
+    @issue.update_attribute(:author_id, @admin.id)
+    
     post :create, :id => @issue.id, :address => 's@b.com', :notes => 'a note added to the e-mail'
     assert_redirected_to :controller => :issues, :action => :show,:id => @issue.id
     assert_nil flash[:error]
+    
     assert_equal @issue, assigns('issue')
     assert_equal @issue.project, assigns('project')
     
@@ -81,6 +84,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
     
     assert_mail_body_match @issue.subject, email
     # @bug assert message not supported in redmine 2.3
+    assert_include "Issue \##{@issue.id} has been sent to you by #{User.current.name}.", mail_body(email)
     assert_not_include "You have received this notification because you have either subscribed to it, or are involved in it.", mail_body(email) # "make sure the default footer is removed"
     assert_not_include @journal.notes, mail_body(email)
     assert_include 'a note added to the e-mail', mail_body(email)
@@ -102,6 +106,19 @@ class IssueEmailsControllerTest < ActionController::TestCase
     else
       assert_equal ['s@b.com', 'a@b.com'], email.to  
     end
+  end
+  
+  def test_send_as_anonymous
+    Role.find(5).add_permission! :email_an_issue
+    
+    post :create, :id => @issue.id, :address => 's@b.com', :notes => 'a note added to the e-mail'
+    assert_redirected_to :controller => :issues, :action => :show,:id => @issue.id
+    
+    #validate that email was sent
+    assert !ActionMailer::Base.deliveries.empty?
+    email = ActionMailer::Base.deliveries.last
+    
+    assert_include "Issue \##{@issue.id} has been sent to you.", mail_body(email)
   end
   
   def test_send_with_second_address_invalid

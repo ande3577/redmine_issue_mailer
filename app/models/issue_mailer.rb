@@ -2,7 +2,7 @@ class IssueMailer < Mailer
   layout 'issue_mailer'
   
   # Builds a mail for notifying to_users and cc_users about a new issue
-  def issue_share(issue, to_users, cc_users, journals, notes)
+  def issue_share(issue, sender, to_users, cc_users, journals, notes)
     redmine_headers 'Project' => issue.project.identifier,
                     'Issue-Id' => issue.id,
                     'Issue-Author' => issue.author.login
@@ -11,6 +11,7 @@ class IssueMailer < Mailer
     references issue
     @author = issue.author
     @issue = issue
+    @sender = sender
     @journals = journals
     @users = to_users + cc_users
     @notes = notes

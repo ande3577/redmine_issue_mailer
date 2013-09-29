@@ -30,7 +30,7 @@ class IssueEmailsController < ApplicationController
   
       users << User.new(:mail => a)
     end
-    IssueMailer.issue_share(@issue, users, [], @journals, @notes ).deliver
+    IssueMailer.issue_share(@issue, User.current, users, [], @journals, @notes ).deliver
     flash[:notice] = l(:issue_mailer_message_sent)
     redirect_to :controller => :issues, :action => :show,:id => @issue.id
   end

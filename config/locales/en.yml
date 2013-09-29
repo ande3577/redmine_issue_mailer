@@ -18,3 +18,4 @@ en:
   issue_mailer_all_history: "All history"
   label_issue_mailer_add_users: "Add users"
   permision_email_an_issue: "E-mail an issue"
+  text_issue_shared_by_anonymous: "Issue %{id} has been sent to you."

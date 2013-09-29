@@ -1,4 +1,4 @@
-<%= l(:text_issue_shared, :id => "##{@issue.id}", :author => h(@issue.author)) %>
+<% if @sender and @sender.logged? %><%= l(:text_issue_shared, :id => "##{@issue.id}", :author => h(@sender)) %><% else %><%= l(:text_issue_shared_by_anonymous, :id => "##{@issue.id}") %><%end%>
 <% if @notes and !@notes.empty? %>
   <p><%= textilizable(@notes, :only_path => :false) %></p>
 <% end %>
