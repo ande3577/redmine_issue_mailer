@@ -7,6 +7,8 @@ notification to be correctly configured on the installation.  The e-mail
 functionality is accessible from the issue sidebar for users with the "Email 
 issue" permission.
 
+The outgoing message is CCed to the sender.
+
 ### Emailing an Issue
 
 ![EmailAnIssue](img/email_issue.png "E-mail an Issue")
