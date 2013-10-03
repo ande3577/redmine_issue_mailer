@@ -17,6 +17,10 @@ $(window).load(function() {
     <em class="info"><%= l(:text_comma_separated) %></em></p>
     <p><%= label_tag(:include_history, l(:issue_mailer_label_field_include_history)) %>
     <%= select_tag(:include_history, options_for_select([[l(:issue_mailer_no_history), ''], [l(:issue_mailer_comments_only), 'comments_only'], [l(:issue_mailer_all_history), 'all_history']], @include_history)) %>
+    <% if User.current.logged? %>
+    <p><%= label_tag(:cc_self, l(:issue_mailer_label_field_cc_self)) %>
+    <%= check_box_tag(:cc_self, @cc_self, @cc_self) %>
+    <% end %>
     <p>
     <%= label_tag :notes %>
     <%= content_tag 'span', :id => "notes_and_toolbar" do %>

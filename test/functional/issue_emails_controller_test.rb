@@ -30,6 +30,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert_template :new
     assert_equal @issue, assigns('issue')
     assert_equal @issue.project, assigns('project')
+    assert assigns('cc_self')
   end
   
   def test_create_without_permission
@@ -45,6 +46,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert_response 200
     assert flash[:error]
     assert_template :new
+    assert !assigns('cc_self')
   end
   
   def test_send_email_with_invalid_address
@@ -90,6 +92,24 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert_include 'a note added to the e-mail', mail_body(email)
   end
   
+  def test_cc_self
+    get_user()
+    add_permission()
+
+    post :create, :id => @issue.id, :address => 's@b.com', :cc_self => '1', :notes => 'a note added to the e-mail'    
+
+    #validate that email was sent
+    assert !ActionMailer::Base.deliveries.empty?
+    email = ActionMailer::Base.deliveries.last
+    
+    if Setting.bcc_recipients?
+      assert_equal ['s@b.com', User.current.mail], email.bcc
+    else
+      assert_equal ['s@b.com'], email.to
+      assert_equal [User.current.mail], email.cc  
+    end
+  end
+    
   def test_send_to_multiple_addresses
     get_user()
     add_permission()
@@ -119,6 +139,24 @@ class IssueEmailsControllerTest < ActionController::TestCase
     email = ActionMailer::Base.deliveries.last
     
     assert_include "Issue \##{@issue.id} has been sent to you.", mail_body(email)
+  end
+  
+  def test_cc_self_as_anonymous
+    Role.find(5).add_permission! :email_an_issue
+    
+    post :create, :id => @issue.id, :address => 's@b.com', :cc_self => '1', :notes => 'a note added to the e-mail'    
+
+    #validate that email was sent
+    assert !ActionMailer::Base.deliveries.empty?
+    email = ActionMailer::Base.deliveries.last
+    
+    if Setting.bcc_recipients?
+      assert_equal ['s@b.com'], email.bcc
+    else
+      assert_equal ['s@b.com'], email.to
+      assert_equal [], email.cc
+    end
+
   end
   
   def test_send_with_second_address_invalid

@@ -5,6 +5,8 @@ class IssueEmailsController < ApplicationController
   
   before_filter :get_issue, :get_project, :authorize 
   before_filter :get_address_from_params, :get_journals, :get_notes_from_params, :only => [:new, :create]
+  before_filter :initialize_cc_self_from_params, :only => :new
+  before_filter :get_cc_self_from_params, :only => :create
 
   def new
   end
@@ -32,8 +34,7 @@ class IssueEmailsController < ApplicationController
     end
     # add self to cc
     cc_users = []
-    cc_users << User.current
-    # IssueMailer.issue_share(@issue, User.current, users, [], @journals, @notes ).deliver
+    cc_users << User.current if @cc_self
     IssueMailer.issue_share(@issue, User.current, users, cc_users , @journals, @notes ).deliver
     flash[:notice] = l(:issue_mailer_message_sent)
     redirect_to :controller => :issues, :action => :show,:id => @issue.id
@@ -101,6 +102,14 @@ class IssueEmailsController < ApplicationController
   
   def get_notes_from_params
     @notes = params[:notes]
+  end
+  
+  def initialize_cc_self_from_params
+    @cc_self = true
+  end 
+ 
+  def get_cc_self_from_params
+    @cc_self = params[:cc_self]
   end
   
   def handle_address_error(error)
