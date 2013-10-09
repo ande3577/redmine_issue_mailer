@@ -5,6 +5,7 @@
 $(window).load(function() {
   $(add_user_label).hide();
   $(add_user_link).show();
+  $(add_user_link_image).show();
 // Handler for .ready() called.
 });
 <% end %>
@@ -14,6 +15,7 @@ $(window).load(function() {
     <p><%= label_tag(:address, l(:issue_mailer_label_field_address), :id => 'add_user_label') %>
     <%= link_to label_tag(:address, l(:issue_mailer_label_field_address), :hidden => true, :id => 'add_user_link'), :action => :users, :remote => true, :id => @issue.id %>
     <%= text_field_tag(:address, @address, :size => 80) %>
+    <%= link_to image_tag('user.png', :hidden => true, :id => 'add_user_link_image'), :action => :users, :remote => true, :id => @issue.id  %>
     <em class="info"><%= l(:text_comma_separated) %></em></p>
     <p><%= label_tag(:include_history, l(:issue_mailer_label_field_include_history)) %>
     <%= select_tag(:include_history, options_for_select([[l(:issue_mailer_no_history), ''], [l(:issue_mailer_comments_only), 'comments_only'], [l(:issue_mailer_all_history), 'all_history']], @include_history)) %>
