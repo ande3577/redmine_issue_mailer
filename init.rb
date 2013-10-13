@@ -5,7 +5,7 @@ Redmine::Plugin.register :redmine_issue_mailer do
   settings :default => {'allowed_domains' => nil}, :partial => 'settings/issue_mailer_settings'
   
   project_module :issue_mailer do
-    permission :email_an_issue, :issue_emails => [ :create, :new, :users, :add_users ]
+    permission :email_an_issue, :issue_emails => [ :create, :new, :users, :add_users, :preview ]
   end
   
   name 'Redmine Issue Mailer plugin'

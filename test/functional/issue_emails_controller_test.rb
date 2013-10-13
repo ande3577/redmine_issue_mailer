@@ -304,6 +304,16 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert_equal "", assigns(:email_string)
   end
   
+  def test_preview
+    get_user()
+    add_permission()
+    
+    post :preview, :id => @issue.id, :format => :js, :notes => 'a note added to the e-mail'
+    assert_response 200
+    assert_equal('a note added to the e-mail', assigns(:previewed))
+    assert_equal('a note added to the e-mail', assigns(:text))
+  end
+  
   private
   def get_admin()
     @request.session[:user_id] = @admin.id

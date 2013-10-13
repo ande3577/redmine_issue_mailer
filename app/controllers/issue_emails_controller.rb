@@ -4,9 +4,9 @@ class IssueEmailsController < ApplicationController
   helper :issues
   
   before_filter :get_issue, :get_project, :authorize 
-  before_filter :get_address_from_params, :get_journals, :get_notes_from_params, :only => [:new, :create]
+  before_filter :get_address_from_params, :get_journals, :get_notes_from_params, :only => [:new, :create, :preview]
   before_filter :initialize_cc_self_from_params, :only => :new
-  before_filter :get_cc_self_from_params, :only => :create
+  before_filter :get_cc_self_from_params, :only => [ :create, :preview ]
 
   def new
   end
@@ -66,6 +66,12 @@ class IssueEmailsController < ApplicationController
     respond_to do |format|
       format.js
     end
+  end
+  
+  def preview
+    @previewed = @notes
+    @text = @previewed
+    render :partial => 'common/preview'
   end
   
   private

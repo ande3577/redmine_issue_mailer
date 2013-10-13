@@ -10,7 +10,7 @@ $(window).load(function() {
 });
 <% end %>
 
-<%= form_tag(:action => :create) do %>
+<%= form_tag(url_for(:action => :create), :id => 'issue-share-form') do %>
   <div class="tabular">
     <p><%= label_tag(:address, l(:issue_mailer_label_field_address), :id => 'add_user_label') %>
     <%= link_to label_tag(:address, l(:issue_mailer_label_field_address), :hidden => true, :id => 'add_user_link'), :action => :users, :remote => true, :id => @issue.id %>
@@ -32,4 +32,7 @@ $(window).load(function() {
 <%= wikitoolbar_for 'notes' %> 
   </div>
     <%= submit_tag l(:issue_mailer_button_send) %>
+    <%= preview_link url_for(:action => :preview, :id => @issue), 'issue-share-form' %>
 <% end %>
+
+<div id="preview" class="wiki"></div>
