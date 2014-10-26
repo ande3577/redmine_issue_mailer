@@ -31,6 +31,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
     assert_equal @issue, assigns('issue')
     assert_equal @issue.project, assigns('project')
     assert assigns('cc_self')
+    assert assigns('subject')
   end
   
   def test_create_without_permission
@@ -52,11 +53,12 @@ class IssueEmailsControllerTest < ActionController::TestCase
   def test_send_email_with_invalid_address
     get_user()
     add_permission()
-    post :create, :id => @issue.id, :address => 'sb.com'
+    post :create, :id => @issue.id, :address => 'sb.com', :subject => 'new subject'
     assert_response 200
     assert flash[:error]
     assert_template :new
-    assert 'sb.com', assigns('address')
+    assert_equal 'sb.com', assigns('address')
+    assert_equal 'new subject', assigns('subject')
   end
   
   def test_send_email_with_permission
@@ -64,7 +66,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
     add_permission()
     @issue.update_attribute(:author_id, @admin.id)
     
-    post :create, :id => @issue.id, :address => 's@b.com', :notes => 'a note added to the e-mail'
+    post :create, :id => @issue.id, :address => 's@b.com', :notes => 'a note added to the e-mail', :subject => 'subject of email'
     assert_redirected_to :controller => :issues, :action => :show,:id => @issue.id
     assert_nil flash[:error]
     
@@ -84,6 +86,7 @@ class IssueEmailsControllerTest < ActionController::TestCase
       assert_equal ['s@b.com'], email.to  
     end
     
+    assert_equal 'subject of email', email.subject
     assert_mail_body_match @issue.subject, email
     # @bug assert message not supported in redmine 2.3
     assert_include "Issue \##{@issue.id} has been sent to you by #{User.current.name}.", mail_body(email)

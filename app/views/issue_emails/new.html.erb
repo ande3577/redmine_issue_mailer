@@ -23,8 +23,10 @@ $(window).load(function() {
     <p><%= label_tag(:cc_self, l(:issue_mailer_label_field_cc_self)) %>
     <%= check_box_tag(:cc_self, @cc_self, @cc_self) %>
     <% end %>
-    <p>
-    <%= label_tag :notes %>
+    <p><%= label_tag :subject %>
+    <%= text_field_tag :subject, @subject, :size => 80 %>
+
+    <p><%= label_tag :notes %>
     <%= content_tag 'span', :id => "notes_and_toolbar" do %>
       <%= text_area_tag(:notes, @notes, :cols => 60, :rows => 10, :accesskey => accesskey(:edit), :class => 'wiki-edit', :no_label => true ) %>
     <% end %>

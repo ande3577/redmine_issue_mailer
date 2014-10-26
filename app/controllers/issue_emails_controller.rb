@@ -4,6 +4,7 @@ class IssueEmailsController < ApplicationController
   helper :issues
   
   before_filter :get_issue, :get_project, :authorize 
+  before_filter :build_subject, :only => :new
   before_filter :get_address_from_params, :get_journals, :get_notes_from_params, :only => [:new, :create, :preview]
   before_filter :initialize_cc_self_from_params, :only => :new
   before_filter :get_cc_self_from_params, :only => [ :create, :preview ]
@@ -12,6 +13,7 @@ class IssueEmailsController < ApplicationController
   end
 
   def create
+    @subject = params[:subject]
     users = []
     return handle_address_error(l(:issue_mailer_blank_address_error)) if @addresses.nil? or @addresses.empty?
       
@@ -35,7 +37,7 @@ class IssueEmailsController < ApplicationController
     # add self to cc
     cc_users = []
     cc_users << User.current if @cc_self
-    IssueMailer.issue_share(@issue, User.current, users, cc_users , @journals, @notes ).deliver
+    IssueMailer.issue_share(@issue, @subject, User.current, users, cc_users , @journals, @notes ).deliver
     flash[:notice] = l(:issue_mailer_message_sent)
     redirect_to :controller => :issues, :action => :show,:id => @issue.id
   end
@@ -85,6 +87,10 @@ class IssueEmailsController < ApplicationController
   
   def get_project
     @project = @issue.project
+  end
+
+  def build_subject
+    @subject = "[#{@issue.project.name} - #{@issue.tracker.name} ##{@issue.id}] (#{@issue.status.name}) #{@issue.subject}"
   end
   
   def get_address_from_params
