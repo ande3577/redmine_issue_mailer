@@ -18,6 +18,7 @@ class IssueMailer < Mailer
     @issue_url = url_for(:controller => 'issues', :action => 'show', :id => issue)
     # allow sending to self regardless of no self notification
     @author.pref.no_self_notified = false if @author
+
     mail :to => to_users.map(&:mail),
       :cc => cc_users.map(&:mail),
       :subject => "[#{issue.project.name} - #{issue.tracker.name} ##{issue.id}] (#{issue.status.name}) #{issue.subject}"

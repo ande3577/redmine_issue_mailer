@@ -2,7 +2,7 @@ require File.expand_path('../../test_helper', __FILE__)
 
 class IssueEmailsControllerTest < ActionController::TestCase
   fixtures :issues, :users, :projects, :members, :member_roles, :journals, 
-    :journal_details, :roles
+    :journal_details, :roles, :trackers, :issue_statuses
   
   def setup
     @issue = Issue.find(2)
